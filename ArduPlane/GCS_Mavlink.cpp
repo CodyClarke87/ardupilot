@@ -294,6 +294,63 @@ void Plane::send_wind(mavlink_channel_t chan)
         wind.z);
 }
 
+void Plane::send_ash_data(mavlink_channel_t chan)
+{
+    mavlink_msg_ash_data_send(
+        chan,
+        planeAshData.binCount0,
+		planeAshData.binCount1,
+		planeAshData.binCount2,
+		planeAshData.binCount3,
+		planeAshData.binCount4,
+		planeAshData.binCount5,
+		planeAshData.binCount6,
+		planeAshData.binCount7,
+		planeAshData.binCount8,
+		planeAshData.binCount9,
+		planeAshData.binCount10,
+		planeAshData.binCount11,
+		planeAshData.binCount12,
+		planeAshData.binCount13,
+		planeAshData.binCount14,
+		planeAshData.binCount15,
+		planeAshData.samplingPeriod,
+		planeAshData.myPM1,
+		planeAshData.myPM3,
+		planeAshData.myPM10,
+		planeAshData.myPM17_5,
+		planeAshData.totalConc);
+}
+
+void Plane::update_ash_data(mavlink_message_t* msg)
+{
+	mavlink_send_ash_data_t packet;
+	mavlink_msg_send_ash_data_decode(msg, &packet);
+	
+	planeAshData.binCount0 = packet.sendBinCount0;
+	planeAshData.binCount1 = packet.sendBinCount1;
+	planeAshData.binCount2 = packet.sendBinCount2;
+	planeAshData.binCount3 = packet.sendBinCount3;
+	planeAshData.binCount4 = packet.sendBinCount4;
+	planeAshData.binCount5 = packet.sendBinCount5;
+	planeAshData.binCount6 = packet.sendBinCount6;
+	planeAshData.binCount7 = packet.sendBinCount7;
+	planeAshData.binCount8 = packet.sendBinCount8;
+	planeAshData.binCount9 = packet.sendBinCount9;
+	planeAshData.binCount10 = packet.sendBinCount10;
+	planeAshData.binCount11 = packet.sendBinCount11;
+	planeAshData.binCount12 = packet.sendBinCount12;
+	planeAshData.binCount13 = packet.sendBinCount13;
+	planeAshData.binCount14 = packet.sendBinCount14;
+	planeAshData.binCount15 = packet.sendBinCount15;
+	planeAshData.samplingPeriod = packet.sendSamplingPeriod;
+	planeAshData.myPM1 = packet.sendMyPM1;
+	planeAshData.myPM3 = packet.sendMyPM3;
+	planeAshData.myPM10 = packet.sendMyPM10;
+	planeAshData.myPM17_5 = packet.sendMyPM17_5;
+	planeAshData.totalConc = packet.sendTotalConc;
+}
+
 /*
   send RPM packet
  */
@@ -661,6 +718,12 @@ bool GCS_MAVLINK_Plane::try_send_message(enum ap_message id)
         CHECK_PAYLOAD_SIZE(ADSB_VEHICLE);
         plane.adsb.send_adsb_vehicle(chan);
         break;
+    
+    case MSG_ASH_DATA:
+        CHECK_PAYLOAD_SIZE(ASH_DATA);
+        plane.send_ash_data(chan);
+        break;
+       
     }
     return true;
 }
@@ -877,6 +940,7 @@ GCS_MAVLINK_Plane::data_stream_send(void)
         send_message(MSG_EKF_STATUS_REPORT);
         send_message(MSG_GIMBAL_REPORT);
         send_message(MSG_VIBRATION);
+        send_message(MSG_ASH_DATA);
     }
 
     if (plane.gcs_out_of_time) return;
@@ -2077,6 +2141,10 @@ void GCS_MAVLINK_Plane::handleMessage(mavlink_message_t* msg)
 
         break;
     }
+    
+    case MAVLINK_MSG_ID_SEND_ASH_DATA:
+		plane.update_ash_data(msg);
+		break;
 
     case MAVLINK_MSG_ID_ADSB_VEHICLE:
     case MAVLINK_MSG_ID_UAVIONIX_ADSB_OUT_CFG:

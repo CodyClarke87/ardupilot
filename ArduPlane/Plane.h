@@ -236,6 +236,32 @@ private:
 
     AP_RPM rpm_sensor;
     
+    struct {
+        // ash data struct for use within plane class
+		uint16_t binCount0;
+		uint16_t binCount1;
+		uint16_t binCount2;
+		uint16_t binCount3;
+		uint16_t binCount4;
+		uint16_t binCount5;
+		uint16_t binCount6;
+		uint16_t binCount7;
+		uint16_t binCount8;
+		uint16_t binCount9;
+		uint16_t binCount10;
+		uint16_t binCount11;
+		uint16_t binCount12;
+		uint16_t binCount13;
+		uint16_t binCount14;
+		uint16_t binCount15;
+		float samplingPeriod;
+		float myPM1;
+		float myPM3;
+		float myPM10;
+		float myPM17_5;
+		float totalConc;
+    } planeAshData {0u, 1u, 2u, 3u, 4u, 5u, 6u, 7u, 8u, 9u, 10u, 11u, 12u, 13u, 14u, 15u, 16.0f, 17.0f, 18.0f, 19.0f, 20.0f, 21.0f};
+    
 // Inertial Navigation EKF
 #if AP_AHRS_NAVEKF_AVAILABLE
     NavEKF EKF{&ahrs, barometer, rangefinder};
@@ -839,6 +865,8 @@ private:
     void send_simstate(mavlink_channel_t chan);
     void send_hwstatus(mavlink_channel_t chan);
     void send_wind(mavlink_channel_t chan);
+    void send_ash_data(mavlink_channel_t chan);
+	void update_ash_data(mavlink_message_t* msg);
     void send_pid_tuning(mavlink_channel_t chan);
     void send_rpm(mavlink_channel_t chan);
     void send_rangefinder(mavlink_channel_t chan);

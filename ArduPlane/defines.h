@@ -135,7 +135,8 @@ enum log_messages {
     LOG_STATUS_MSG,
     LOG_OPTFLOW_MSG,
     LOG_QTUN_MSG,
-    LOG_PARAMTUNE_MSG
+    LOG_PARAMTUNE_MSG,
+    LOG_ASH_LOG_DATA_MSG
 };
 
 #define MASK_LOG_ATTITUDE_FAST          (1<<0)
@@ -155,6 +156,7 @@ enum log_messages {
 #define MASK_LOG_SONAR                  (1<<14)
 #define MASK_LOG_ARM_DISARM             (1<<15)
 #define MASK_LOG_IMU_RAW                (1UL<<19)
+#define MASK_LOG_ASH_LOG_DATA           (1UL<<20)
 
 // Waypoint Modes
 // ----------------

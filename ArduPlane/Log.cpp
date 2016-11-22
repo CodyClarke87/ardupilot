@@ -48,6 +48,7 @@ bool Plane::print_log_menu(void)
         PLOG(CAMERA);
         PLOG(RC);
         PLOG(SONAR);
+        PLOG(ASH_LOG_DATA);
  #undef PLOG
     }
 
@@ -127,6 +128,7 @@ int8_t Plane::select_logs(uint8_t argc, const Menu::arg *argv)
         TARG(CAMERA);
         TARG(RC);
         TARG(SONAR);
+        TARG(ASH_LOG_DATA);
  #undef TARG
     }
 
@@ -362,6 +364,64 @@ void Plane::Log_Write_Sonar()
 #endif
 }
 
+struct PACKED log_ash_log_data {
+    LOG_PACKET_HEADER;
+    uint64_t time_us;
+    uint16_t binCount0;
+    uint16_t binCount1;
+    uint16_t binCount2;
+    uint16_t binCount3;
+    uint16_t binCount4;
+    uint16_t binCount5;
+    uint16_t binCount6;
+    uint16_t binCount7;
+    uint16_t binCount8;
+    uint16_t binCount9;
+    uint16_t binCount10;
+    uint16_t binCount11;
+    uint16_t binCount12;
+    uint16_t binCount13;
+    uint16_t binCount14;
+    uint16_t binCount15;
+    float samplingPeriod;
+    float myPM1;
+    float myPM3;
+    float myPM10;
+    float myPM17_5;
+    float totalConc;
+};
+
+void Plane::Log_Write_Ash_Log_Data()
+{
+    struct log_ash_log_data pkt = {
+        LOG_PACKET_HEADER_INIT(LOG_ASH_LOG_DATA_MSG),
+        time_us         : AP_HAL::micros64(),
+        binCount0       : planeAshData.binCount0,
+        binCount1       : planeAshData.binCount1,
+        binCount2       : planeAshData.binCount2,
+        binCount3       : planeAshData.binCount3,
+        binCount4       : planeAshData.binCount4,
+        binCount5       : planeAshData.binCount5,
+        binCount6       : planeAshData.binCount6,
+        binCount7       : planeAshData.binCount7,
+        binCount8       : planeAshData.binCount8,
+        binCount9       : planeAshData.binCount9,
+        binCount10      : planeAshData.binCount10,
+        binCount11      : planeAshData.binCount11,
+        binCount12      : planeAshData.binCount12,
+        binCount13      : planeAshData.binCount13,
+        binCount14      : planeAshData.binCount14,
+        binCount15      : planeAshData.binCount15,
+        samplingPeriod  : planeAshData.samplingPeriod,
+        myPM1           : planeAshData.myPM1,
+        myPM3           : planeAshData.myPM3,
+        myPM10          : planeAshData.myPM10,
+        myPM17_5        : planeAshData.myPM17_5,
+        totalConc       : planeAshData.totalConc
+    };
+    DataFlash.WriteBlock(&pkt, sizeof(pkt));
+}
+
 struct PACKED log_Optflow {
     LOG_PACKET_HEADER;
     uint64_t time_us;
@@ -495,6 +555,8 @@ const struct LogStructure Plane::log_structure[] = {
     { LOG_OPTFLOW_MSG, sizeof(log_Optflow),
       "OF",   "QBffff",   "TimeUS,Qual,flowX,flowY,bodyX,bodyY" },
 #endif
+    { LOG_ASH_LOG_DATA_MSG, sizeof(log_ash_log_data),
+      "ASH", "QHHHHHHHHHHHHHHHHffffff", "TimeUS,A,B,C,D,E,F,G,H,I,J,K,L,M,N,O,P,SaP,C1,C3,C10,C17_5,CTot" },
 };
 
 #if CLI_ENABLED == ENABLED
@@ -571,6 +633,7 @@ void Plane::Log_Write_Control_Tuning() {}
 void Plane::Log_Write_Nav_Tuning() {}
 void Plane::Log_Write_Status() {}
 void Plane::Log_Write_Sonar() {}
+void Plane::Log_Write_Ash_Log_Data() {}
 
  #if OPTFLOW == ENABLED
 void Plane::Log_Write_Optflow() {}

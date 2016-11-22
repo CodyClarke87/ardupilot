@@ -18,7 +18,7 @@ struct LogStructure {
     uint8_t msg_type;
     uint8_t msg_len;
     const char name[5];
-    const char format[16];
+    const char format[24];
     const char labels[64];
 };
 
@@ -30,7 +30,7 @@ struct PACKED log_Format {
     uint8_t type;
     uint8_t length;
     char name[4];
-    char format[16];
+    char format[24];
     char labels[64];
 };
 

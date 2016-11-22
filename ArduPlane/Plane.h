@@ -889,6 +889,7 @@ private:
     void Log_Write_Nav_Tuning();
     void Log_Write_Status();
     void Log_Write_Sonar();
+    void Log_Write_Ash_Log_Data();
     void Log_Write_Optflow();
     void Log_Write_Current();
     void Log_Arm_Disarm();

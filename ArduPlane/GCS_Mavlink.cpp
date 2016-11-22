@@ -2144,6 +2144,7 @@ void GCS_MAVLINK_Plane::handleMessage(mavlink_message_t* msg)
     
     case MAVLINK_MSG_ID_SEND_ASH_DATA:
 		plane.update_ash_data(msg);
+        plane.Log_Write_Ash_Log_Data();
 		break;
 
     case MAVLINK_MSG_ID_ADSB_VEHICLE:

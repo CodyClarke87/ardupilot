@@ -295,8 +295,8 @@ bool AP_InertialSensor_MPU9250::_has_auxiliary_bus()
 
 void AP_InertialSensor_MPU9250::start()
 {
-    if (!_dev->get_semaphore()->take(100)) {
-        AP_HAL::panic("MPU92500: Unable to get semaphore");
+    if (!_dev->get_semaphore()->take(0)) {
+        return;
     }
 
     // initially run the bus at low speed
@@ -513,7 +513,7 @@ void AP_InertialSensor_MPU9250::_check_temperature(void)
     if (fabsf(_last_temp - temp) > 2 && !is_zero(_last_temp)) {
         // a 2 degree change in one sample is a highly likely
         // sign of a FIFO alignment error
-        printf("FIFO temperature reset: %.2f %.2f\n",
+        printf("MPU9250: FIFO temperature reset: %.2f %.2f\n",
                (double)temp, (double)_last_temp);
         _last_temp = temp;
         _fifo_reset();
@@ -557,6 +557,11 @@ bool AP_InertialSensor_MPU9250::_read_sample()
         n_samples -= n;
     }
 
+    if (bytes_read > MPU9250_SAMPLE_SIZE * 35) {
+        printf("MPU9250: fifo reset\n");
+        _fifo_reset();
+    }
+    
     if (_temp_counter++ == 255) {
         // check FIFO integrity every 0.25s
         _check_temperature();
@@ -595,8 +600,8 @@ void AP_InertialSensor_MPU9250::_register_write(uint8_t reg, uint8_t val, bool c
 
 bool AP_InertialSensor_MPU9250::_hardware_init(void)
 {
-    if (!_dev->get_semaphore()->take(100)) {
-        AP_HAL::panic("MPU9250: Unable to get semaphore");
+    if (!_dev->get_semaphore()->take(0)) {
+        return false;
     }
 
     // setup for register checking
